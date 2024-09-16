@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <title>Generator żartów - Wiktor Kycia, Jan Topolewski</title>
+        <link rel="stylesheet" href="style.css">
+        <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Generator losowych żartów</h1>
+            <fieldset aria-required="true">
+                <legend>Podaj typ żartu</legend>
+                <input type="radio" name="typ" id="input_wszystko">wszystkie<br>
+                <input type="radio" name="typ" id="input_zw">zwykły<br>
+                <input type="radio" name="typ" id="input_prog">dla programistów<br>
+            </fieldset>
+
+            <label>Ile żartów mam wyświetlić?
+                <input type="number" id="ilosc" min="1" max="10" default="1" required value="1">
+            </label>
+
+            <label for="lang">Wybierz język: 
+                <select name="lang" id="lang">
+                    <option value="angielski">Angielski</option>
+                    <option value="polski">Polski</option>
+                    <option value="niemiecki">Niemiecki</option>
+                    <option value="hiszpański">Hiszpański</option>
+                    <option value="francuski">Francuski</option>
+                </select>
+            </label>
+            
+            <button id="btn">Wygeneruj</button>
+        </div>
+        <section id="joke"></section>
+        <script>
+            let joke = document.querySelector("#joke");
+            let lang = document.querySelector("#lang");
+            let btn = document.querySelector("#btn");
+            let tab = new Array();
+            let inp_ilosc = document.querySelector("#ilosc");
+            const translatorURL = 'https://api.mymemory.translated.net/get?q=';
+
+            document.querySelector("select").addEventListener("change", translate);
+            
+            btn.onclick = function () 
+            {
+                $("#joke").slideUp("normal", function(){
+                    $("#ilosc").css({"border-color":"black"});
+                    $("fieldset").css({"border-color":"grey"})
+                    if(!inp_ilosc.checkValidity()) // checkValidity to metoda wbudowana w przeglądarkę
+                    {
+                        joke.innerHTML = inp_ilosc.validationMessage;
+                        $("#ilosc").css({"border-color":"red"});
+                        $("#joke").slideDown();
+                    }
+                    else if(
+                        !document.querySelector("#input_prog").checked &&
+                        !document.querySelector("#input_zw").checked &&
+                        !document.querySelector("#input_wszystko").checked
+                    )
+                    {
+                        joke.innerHTML = "Podaj typ";
+                        $("fieldset").css({"border-color":"red"})
+                        $("#joke").slideDown();
+                    }
+                    else
+                    {
+                        let type = "";
+                        if(document.querySelector("#input_prog").checked){
+                            type = "programming";
+                        } else if (document.querySelector("#input_zw").checked){
+                            type = "general";
+                        } else if (document.querySelector("#input_wszystko").checked){
+                            type = "";
+                        }
+                        var url;
+                        console.log(type);
+                        if(type != "")
+                        {
+                            url = `https://official-joke-api.appspot.com/jokes/${type}/random`;
+                            console.log(url);
+                        }
+                        else
+                        {
+                            url = "https://official-joke-api.appspot.com/jokes/random";
+                        }
+                        tab = [];
+                        for(let i = 0; i < inp_ilosc.value; i++)
+                        {
+                            fetch(url)
+                            .then((res)=>res.json())
+                            .then((dane)=>{
+                                console.log(dane);
+                                if(type == "")
+                                {
+                                    tab.push(dane.setup + " " + dane.punchline);
+                                }
+                                else
+                                {
+                                    tab.push(dane[0].setup + " " + dane[0].punchline);
+                                }
+                                if(i+1==inp_ilosc.value){
+                                    translate();
+                                }
+                            }
+                            ).catch((err)=>console.error(err));
+                        }
+                    }
+                });
+            }
+            
+            function translate(){
+                joke.innerHTML = "";
+                for (x of tab){
+                    switch(lang.value){
+                        case 'polski':
+                            fetch(`${translatorURL}${x}&langpair=en|pl`)
+                            .then(res => res.json())
+                            .then((data) => {
+                                insertData(data);
+                            });
+                            break;
+                        case 'angielski':
+                            joke.innerHTML += `<p class="joke">${x}</p>`;
+                            break;
+                        case 'niemiecki':
+                            fetch(`${translatorURL}${x}&langpair=en|de`)
+                            .then(res => res.json())
+                            .then((data) => {
+                                insertData(data);
+                            }); 
+                            break;
+                        case 'hiszpański':
+                            fetch(`${translatorURL}${x}&langpair=en|es`)
+                            .then(res => res.json())
+                            .then((data) => {
+                                insertData(data);
+                            }); 
+                            break;
+                        case 'francuski':
+                            fetch(`${translatorURL}${x}&langpair=en|fr`)
+                            .then(res => res.json())
+                            .then((data) => {
+                                insertData(data);
+                            }); 
+                            break;
+                    }
+                }
+                $("#joke").slideDown();
+            }
+            function insertData(data)
+            {
+                // $("#joke").slideUp();
+                console.log(data);
+                const p = document.createElement("p");
+                p.classList.add("joke");
+                p.innerText += data.responseData.translatedText;
+                joke.appendChild(p);
+                // $("#joke").slideDown();
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,5 @@
+api do generowania żartów:
+https://github.com/15Dkatz/official_joke_api
+
+api do tłumaczenia:
+https://mymemory.translated.net/doc/spec.php

@@ -1,0 +1,86 @@
+*
+{
+    font-family: Verdana, sans-serif;
+}
+
+html, body
+{
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.container
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 15px;
+}
+
+.container,section
+{
+    width: 650px;
+    background-color: #cba;
+}
+section
+{
+    padding: 0;
+    display: none;
+    text-align: center;
+}
+
+.joke
+{
+    text-align: center;
+    margin: 0;
+    padding: 15px 0;
+}
+.joke:nth-of-type(3n)
+{
+    background-color: #abc;
+}
+.joke:nth-of-type(3n+1)
+{
+    background-color: #bca;
+}
+.joke:nth-of-type(3n+2)
+{
+    background-color: #adb;
+}
+
+button
+{
+    background-color: #adb;
+    border: none;
+    padding: 10px;
+    transition: all 550ms;
+    border-radius: 15px;
+}
+button:hover
+{
+    box-shadow: 0 0 5px 2px black;
+}
+fieldset, label, button
+{
+    margin: 10px 0;
+}
+fieldset
+{
+    border-color: grey;
+    border-radius: 15px;
+}
+#ilosc
+{
+    border-color: black;
+    border-radius: 5px;
+}
+fieldset, #ilosc
+{
+    transition: all 200ms ease;
+}
+select
+{
+    border-radius: 5px;
+}
